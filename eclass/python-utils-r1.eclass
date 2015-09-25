@@ -43,7 +43,7 @@ inherit toolchain-funcs
 _PYTHON_ALL_IMPLS=(
 	jython2_7
 	pypy pypy3
-	python2_7
+	python2_5 python2_7
 	python3_4 python3_5 python3_6 python3_7
 )
 readonly _PYTHON_ALL_IMPLS
@@ -80,7 +80,7 @@ _python_impl_supported() {
 	# keep in sync with _PYTHON_ALL_IMPLS!
 	# (not using that list because inline patterns shall be faster)
 	case "${impl}" in
-		python2_7|python3_[4567]|jython2_7)
+		python2_[57]|python3_[4567]|jython2_7)
 			return 0
 			;;
 		pypy1_[89]|pypy2_0|python2_[56]|python3_[123])
@@ -456,6 +456,11 @@ python_export() {
 				local flags val
 
 				case "${impl}" in
+					python2.5)
+						[[ -n ${PYTHON} ]] || die "PYTHON needs to be set for ${var} to be exported, or requested before it"
+						flags=$("${PYTHON}" -c 'import distutils.sysconfig; print(distutils.sysconfig.get_config_var("ABIFLAGS") or "")') || die
+						val=${PYTHON}${flags}-config
+						;;
 					python*)
 						[[ -n ${PYTHON} ]] || die "PYTHON needs to be set for ${var} to be exported, or requested before it"
 						flags=$("${PYTHON}" -c 'import sysconfig; print(sysconfig.get_config_var("ABIFLAGS") or "")') || die
