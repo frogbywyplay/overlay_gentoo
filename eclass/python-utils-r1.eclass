@@ -455,6 +455,11 @@ python_export() {
 				local flags val
 
 				case "${impl}" in
+					python2.5)
+						[[ -n ${PYTHON} ]] || die "PYTHON needs to be set for ${var} to be exported, or requested before it"
+						flags=$("${PYTHON}" -c 'import distutils.sysconfig; print(distutils.sysconfig.get_config_var("ABIFLAGS") or "")') || die
+						val=${PYTHON}${flags}-config
+						;;
 					python*)
 						[[ -n ${PYTHON} ]] || die "PYTHON needs to be set for ${var} to be exported, or requested before it"
 						flags=$("${PYTHON}" -c 'import sysconfig; print(sysconfig.get_config_var("ABIFLAGS") or "")') || die
