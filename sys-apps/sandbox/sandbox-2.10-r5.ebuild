@@ -38,7 +38,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-disable-same.patch
 	epatch "${FILESDIR}"/${P}-fix-opendir.patch #553092
 	epatch "${FILESDIR}"/${PN}-2.11-symlinkat-renameat.patch #612202
-	epatch "${FILESDIR}"/${P}-2.10-check-that-CAP_SYS_PTRACE-is-effective.patch
+	epatch "${FILESDIR}"/${P}-check-that-CAP_SYS_PTRACE-is-effective.patch
 	epatch_user
 }
 
