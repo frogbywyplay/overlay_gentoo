@@ -1,0 +1,39 @@
+diff --git a/libsandbox/Makefile.am b/libsandbox/Makefile.am
+index cbc73ba..535896c 100644
+--- a/libsandbox/Makefile.am
++++ b/libsandbox/Makefile.am
+@@ -22,7 +22,8 @@ libsandbox_la_LDFLAGS = \
+ 	-no-undefined \
+ 	-nodefaultlibs \
+ 	-avoid-version \
+-	$(LDFLAG_VER),libsandbox.map
++	$(LDFLAG_VER),libsandbox.map \
++	-lcap
+ libsandbox_la_SOURCES = \
+ 	libsandbox.h \
+ 	libsandbox.c \
+diff --git a/libsandbox/trace.c b/libsandbox/trace.c
+index f9194fe..7575498 100644
+--- a/libsandbox/trace.c
++++ b/libsandbox/trace.c
+@@ -36,6 +36,20 @@ pid_t trace_pid;
+ # define sb_openat_pre_check sb_openat64_pre_check
+ #endif
+ 
++#include <sys/capability.h>
++
++static bool has_cap_sys_ptrace()
++{
++	cap_t this_cap = cap_get_proc();
++	cap_flag_value_t value;
++	cap_get_flag(this_cap, CAP_SYS_PTRACE, CAP_EFFECTIVE, &value);
++	cap_free(this_cap);
++	return value == CAP_SET;
++}
++
++#undef _trace_possible
++#define _trace_possible(data) has_cap_sys_ptrace()
++
+ static void trace_exit(int status)
+ {
+ 	/* if we were vfork-ed, clear trace_pid and exit */
